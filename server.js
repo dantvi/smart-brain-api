@@ -1,7 +1,17 @@
 const express = require('express');
+const bcrypt = require('bcrypt-nodejs');
+const cors = require('cors');
+const db = require('./db-config');
+
+
+
+db.select('*').from('users').then(data => {
+    console.log(data);
+});
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 const database = {
@@ -31,23 +41,25 @@ app.get('/', (req, res) => {
 
 app.post('/signin', (req, res) => {
     if (req.body.email === database.users[0].email && req.body.password === database.users[0].password) {
-        res.json('success');
+        res.json(database.users[0]);
     } else {
         res.status(400).json('error loggin in');
     }
 });
 
 app.post('/register', (req, res) => {
-    const { name, email, password } = req.body;
-    database.users.push({
-        id: '125',
-        name: name,
-        email: email,
-        password: password,
-        entries: 0,
-        joined: new Date()
-    });
-    res.json(database.users[database.users.length - 1]);
+    const { name, email } = req.body;
+    db('users')
+        .returning('*')
+        .insert({
+            name: name,
+            email: email,
+            joined: new Date()
+        })
+        .then(user => {
+            res.json(user[0]);
+        })
+        .catch(err => res.status(400).json('unable to register'));
 });
 
 app.get('/profile/:id', (req, res) => {
