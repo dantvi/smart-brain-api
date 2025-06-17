@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: smartbrain-mysql
+    restart: always
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - smartbrain-mysql-data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    container_name: smartbrain-adminer
+    restart: always
+    ports:
+      - '8081:8080'
+
+volumes:
+  smartbrain-mysql-data:
