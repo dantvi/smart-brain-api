@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const handleSignin = (req, res, db, bcrypt) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -21,7 +23,14 @@ const handleSignin = (req, res, db, bcrypt) => {
             if (!user) {
               return res.status(400).json('unable to get user');
             }
-            res.json(user);
+
+            const token = jwt.sign(
+              { id: user.id, email: user.email },
+              process.env.JWT_SECRET,
+              { expiresIn: '2h' }
+            );
+
+            res.json({ user, token });
           });
       } else {
         res.status(400).json('wrong credentials');

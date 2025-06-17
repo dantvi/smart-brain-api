@@ -10,7 +10,6 @@
 /build
 
 # config files
-db-config.js
 .env
 
 # misc
